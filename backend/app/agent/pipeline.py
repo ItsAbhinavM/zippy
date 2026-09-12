@@ -14,7 +14,7 @@ from pipecat.processors.aggregators.llm_response_universal import (
 from pipecat.processors.frame_processor import FrameProcessor
 
 from app.config import settings
-from app.agent.tools import TOOL_DEFINITION
+from app.agent.tools import TOOLS_SCHEMA
 from app.agent.prompts import GATHER_PROMPT
 from app.state.store import StateStore
 
@@ -45,14 +45,14 @@ def build_pipeline(
     stt = DeepgramSTTService(api_key=settings.deepgram_api_key)
     tts = CartesiaTTSService(
         api_key=settings.cartesia_api_key,
-        voice_id="79a125e8-cd45-4c13-8a67-188112f4dd22",  # placeholder — pick a real Cartesia voice id
+        voice_id="79a125e8-cd45-4c13-8a67-188112f4dd22",  # cartesia voice id
     )
 
     llm = GoogleLLMService(
         api_key=settings.gemini_api_key,
         model="gemini-2.0-flash",   # confirm current model name/availability
-        tools=TOOL_DEFINITIONS,
-        system_instruction=GATHERING_PROMPT,
+        tools=TOOLS_SCHEMA,
+        system_instruction=GATHER_PROMPT,
     )
 
     user_aggregator = LLMContextAggregator()

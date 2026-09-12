@@ -5,6 +5,7 @@ from app.state.models import (
     Conflict, MissingField, Confidence,
 )
 from app.state.diff import compute_diff
+from app.planning.models import Plan
 
 # how far apart two values must be (relative) to count as a genuine conflict rather than rounding/estimation noise
 CONFLICT_THRESHOLD = 0.10
@@ -16,6 +17,7 @@ class StateStore:
     def __init__(self, session_id: str):
         self.state = FinancialState(session_id=session_id)
         self._listeners: list[Listener] = []
+        self.plan: Plan | None=None
 
     def subscribe(self, listener: Listener) -> None:
         self._listeners.append(listener)
@@ -167,6 +169,14 @@ class StateStore:
                 return
         item.amount = amount
         item.confidence = confidence
+    
+    def compute_and_store_plan(self)-> "Plan":
+        from app.planning.calculator import compute_plan
+        plan=compute_plan(self.state)
+        self.plan=plan
+        for listner in self._listeners:
+            listner({"plan":plan.model_dump()})
+        return plan        
 
     @staticmethod
     def _find(items: list, item_id: str, required: bool = True):
