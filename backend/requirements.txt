@@ -38,14 +38,15 @@ num2words==0.5.14
 numba==0.67.0
 numpy==2.5.3
 onnxruntime==1.24.4
-openai==2.54.0
 packaging==26.3
 pillow==12.3.0
 pipecat-ai==1.9.0
+pipecat-ai[daily,google,deepgram,cartesia,silero]
 propcache==0.5.2
 protobuf==6.33.6
 pycparser==3.0
 pydantic==2.13.5
+pydantic-settings
 pydantic_core==2.46.5
 python-dotenv==1.2.3
 PyYAML==6.0.3
