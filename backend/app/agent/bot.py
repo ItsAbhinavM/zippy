@@ -1,2 +1,23 @@
-async def run_bot(*args,**kwargs):
-    raise NotImplementedError("Phase 4")
+from __future__ import annotations
+import logging
+
+from pipecat.pipeline.runner import WorkerRunner
+
+from app.agent.pipeline import build_pipeline
+from app.state.store import StateStore
+from app.agent.tool_handlers import make_state_bridge  # Phase 5
+
+logger = logging.getLogger(__name__)
+
+
+async def run_bot(room_url: str, token: str, store: StateStore) -> None:
+    state_bridge = make_state_bridge(store)
+    pipeline, task = build_pipeline(room_url, token, store, state_bridge)
+
+    runner = WorkerRunner()
+    try:
+        await runner.run(task)
+    except Exception:
+        logger.exception("Bot pipeline crashed for session %s", store.state.session_id)
+    finally:
+        logger.info("Bot pipeline ended for session %s", store.state.session_id)
