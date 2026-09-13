@@ -12,15 +12,15 @@ from pipecat.processors.aggregators.llm_response_universal import LLMContextAggr
 from app.config import settings
 from app.agent.tools import TOOLS_SCHEMA
 from app.agent.tool_handlers import register_all_tools
-from app.agent.prompts import  GATHER_PROMPT
+from app.agent.prompts import GATHERING_PROMPT
 from app.state.store import StateStore
 
 
 def build_pipeline(room_name: str, token: str, store: StateStore) -> tuple[Pipeline, PipelineWorker]:
     transport = LiveKitTransport(
-        settings.livekit_url,   # url
-        token,                  # token
-        room_name,              # room_name — NOT a display name
+        settings.livekit_url,
+        token,
+        room_name,
         LiveKitParams(
             audio_in_enabled=True,
             audio_out_enabled=True,
@@ -29,28 +29,27 @@ def build_pipeline(room_name: str, token: str, store: StateStore) -> tuple[Pipel
     )
 
     stt = DeepgramSTTService(api_key=settings.deepgram_api_key)
+
     tts = CartesiaTTSService(
         api_key=settings.cartesia_api_key,
-        voice_id="79a125e8-cd45-4c13-8a67-188112f4dd22",
+        settings=CartesiaTTSService.Settings(
+            # voice="79a125e8-cd45-4c13-8a67-188112f4dd22",  # confirm this is a REAL voice id from your account
+            voice="db6b0ed5-d5d3-463d-ae85-518a07d3c2b4",
+        ),
     )
 
     llm = GoogleLLMService(
         api_key=settings.gemini_api_key,
-        model="gemini-3.6-flash",
+        settings=GoogleLLMService.Settings(model="gemini-3.6-flash"),
+        system_instruction=GATHERING_PROMPT,   # set here, NOT as a context message
     )
     register_all_tools(llm, store)
 
-    # Universal context replaces the old service-specific
-    # OpenAILLMContext/GoogleLLMContext pattern — one context object
-    # works with any provider.
     context = LLMContext(
-        messages=[{"role": "system", "content": GATHER_PROMPT}],
+        messages=[],
         tools=TOOLS_SCHEMA,
     )
 
-    # LLMContextAggregatorPair is tuple-unpackable directly, per
-    # pipecat's own docs/examples — this replaces the old
-    # llm.create_context_aggregator(context).user()/.assistant() calls.
     user_aggregator, assistant_aggregator = LLMContextAggregatorPair(context)
 
     pipeline = Pipeline([
@@ -58,9 +57,9 @@ def build_pipeline(room_name: str, token: str, store: StateStore) -> tuple[Pipel
         stt,
         user_aggregator,
         llm,
-        assistant_aggregator,
-        tts,
+        tts,                    # tts directly after llm now
         transport.output(),
+        assistant_aggregator,  # moved to the end, matching official examples
     ])
 
     task = PipelineWorker(pipeline, params=PipelineParams(allow_interruptions=True))

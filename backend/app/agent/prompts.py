@@ -10,7 +10,7 @@ Rules you must always follow:
 - If the user gives a number that conflicts with one they gave earlier, ask tehm to clarify rather than picking one yourself.
 """.strip()
 
-GATHER_PROMPT= BASE_SYSTEM_PROMPT + """
+GATHERING_PROMPT= BASE_SYSTEM_PROMPT + """
 Right now you are gathering information. Ask open, natural questions about income, essential expenses, optional expenses, loans and credit cards. Do not follow a fixed script - Let the conversation flow, and avoid asking about something the user has already told you.
 """
 
