@@ -41,7 +41,7 @@ def build_pipeline(room_name: str, token: str, store: StateStore) -> tuple[Pipel
     llm = GoogleLLMService(
         api_key=settings.gemini_api_key,
         settings=GoogleLLMService.Settings(model="gemini-3.6-flash"),
-        system_instruction=GATHERING_PROMPT,   # set here, NOT as a context message
+        system_instruction=GATHERING_PROMPT,
     )
     register_all_tools(llm, store)
 
@@ -51,15 +51,26 @@ def build_pipeline(room_name: str, token: str, store: StateStore) -> tuple[Pipel
     )
 
     user_aggregator, assistant_aggregator = LLMContextAggregatorPair(context)
+    @user_aggregator.event_handler("on_user_turn_stopped")
+    async def _on_user_turn_stopped(aggregator, *args):
+        message = args[-1] if args else None
+        if message is not None and getattr(message, "content", None):
+            store.push_transcript("user", message.content)
+
+    @assistant_aggregator.event_handler("on_assistant_turn_stopped")
+    async def _on_assistant_turn_stopped(aggregator, *args):
+        message = args[-1] if args else None
+        if message is not None and getattr(message, "content", None):
+            store.push_transcript("assistant", message.content)
 
     pipeline = Pipeline([
         transport.input(),
         stt,
         user_aggregator,
         llm,
-        tts,                    # tts directly after llm now
+        tts,                    
         transport.output(),
-        assistant_aggregator,  # moved to the end, matching official examples
+        assistant_aggregator,
     ])
 
     task = PipelineWorker(pipeline, params=PipelineParams(allow_interruptions=True))

@@ -1,4 +1,5 @@
 from __future__ import annotations
+import asyncio
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
 from app.sessions.manager import session_manager
@@ -15,18 +16,18 @@ async def state_socket(websocket: WebSocket, session_id: str):
 
     await websocket.accept()
 
-    # send current full state on connect, so the frontend isn't blank
-    # until the next mutation happens
-    await websocket.send_json({"type": "snapshot", "data": session.store.state.model_dump(mode="json")})
+    await websocket.send_json({
+        "type": "snapshot",
+        "data": session.store.state.model_dump(mode="json"),
+    })
 
-    def on_diff(diff: dict):
-        import asyncio
-        asyncio.create_task(websocket.send_json({"type": "diff", "data": diff}))
+    def on_message(envelope: dict):
+        asyncio.create_task(websocket.send_json(envelope))
 
-    session.store.subscribe(on_diff)
+    session.store.subscribe(on_message)
 
     try:
         while True:
-            await websocket.receive_text()  # keep-alive; frontend doesn't need to send anything meaningful
+            await websocket.receive_text()
     except WebSocketDisconnect:
         pass

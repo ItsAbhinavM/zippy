@@ -1,24 +1,9 @@
-import { Card, CardContent, Typography, Stack, Chip, Divider } from "@mui/material";
+import { Box, Stack, Typography } from "@mui/material";
+import HomeIcon from "@mui/icons-material/Home";
+import LocalMallIcon from "@mui/icons-material/LocalMall";
 import { useFinancialStore, emptyArray } from "../../store/useFinancialStore";
+import { ItemCard } from "./ItemCard";
 import type { ExpenseItem } from "../../types/state";
-
-const confidenceColor = { confirmed: "success", estimated: "warning", uncertain: "error" } as const;
-
-function Row({ item }: { item: ExpenseItem }) {
-  return (
-    <Stack direction="row" justifyContent="space-between" alignItems="center">
-      <Typography variant="body2">
-        {item.label}{item.day_of_month ? ` · day ${item.day_of_month}` : ""}
-      </Typography>
-      <Stack direction="row" spacing={1} alignItems="center">
-        <Typography variant="body2" fontWeight={600}>
-          {item.amount !== null ? `₹${item.amount.toLocaleString()}` : "—"}
-        </Typography>
-        <Chip size="small" label={item.confidence} color={confidenceColor[item.confidence]} />
-      </Stack>
-    </Stack>
-  );
-}
 
 export function ExpensesCard() {
   const essentials = useFinancialStore((s) => s.state?.essential_expenses ?? emptyArray<ExpenseItem>());
@@ -27,30 +12,41 @@ export function ExpensesCard() {
   if (essentials.length === 0 && optional.length === 0) return null;
 
   return (
-    <Card>
-      <CardContent>
-        <Typography variant="h6" gutterBottom>Expenses</Typography>
-
-        {essentials.length > 0 && (
-          <>
-            <Typography variant="overline" color="text.secondary">Essential</Typography>
-            <Stack spacing={1} mb={2}>
-              {essentials.map((e) => <Row key={e.id} item={e} />)}
-            </Stack>
-          </>
-        )}
-
-        {essentials.length > 0 && optional.length > 0 && <Divider sx={{ mb: 2 }} />}
-
-        {optional.length > 0 && (
-          <>
-            <Typography variant="overline" color="text.secondary">Optional</Typography>
-            <Stack spacing={1}>
-              {optional.map((e) => <Row key={e.id} item={e} />)}
-            </Stack>
-          </>
-        )}
-      </CardContent>
-    </Card>
+    <Stack spacing={2}>
+      {essentials.length > 0 && (
+        <Box>
+          <Typography variant="overline" color="text.secondary">Essential Expenses</Typography>
+          <Stack direction="row" spacing={1.5} useFlexGap flexWrap="wrap" mt={0.5}>
+            {essentials.map((e) => (
+              <ItemCard
+                key={e.id}
+                icon={<HomeIcon fontSize="small" color="action" />}
+                title={e.label}
+                subtitle={e.day_of_month ? `Day ${e.day_of_month}` : undefined}
+                amount={e.amount}
+                confidence={e.confidence}
+              />
+            ))}
+          </Stack>
+        </Box>
+      )}
+      {optional.length > 0 && (
+        <Box>
+          <Typography variant="overline" color="text.secondary">Optional Expenses</Typography>
+          <Stack direction="row" spacing={1.5} useFlexGap flexWrap="wrap" mt={0.5}>
+            {optional.map((e) => (
+              <ItemCard
+                key={e.id}
+                icon={<LocalMallIcon fontSize="small" color="action" />}
+                title={e.label}
+                subtitle={e.day_of_month ? `Day ${e.day_of_month}` : undefined}
+                amount={e.amount}
+                confidence={e.confidence}
+              />
+            ))}
+          </Stack>
+        </Box>
+      )}
+    </Stack>
   );
 }

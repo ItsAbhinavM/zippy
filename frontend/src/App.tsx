@@ -5,6 +5,7 @@ import { useStateSocket } from "./hooks/useStaterSocket";
 import { CallProvider } from "./livekit/callProvider";
 import { CallControls } from "./components/CallControls";
 import { VoiceOrb } from "./components/VoiceOrb";
+import { LiveCaption } from "./components/LiveCaptions";
 import { CardGrid } from "./components/cards/CardGrid";
 import { useFinancialStore } from "./store/useFinancialStore";
 
@@ -34,7 +35,7 @@ export default function App() {
   return (
     <Container maxWidth="md" sx={{ py: 4 }}>
       <Typography variant="h4" fontWeight={700} gutterBottom>
-        Zippy — 30-Day Financial Plan
+        Zippy
       </Typography>
 
       {!session && (
@@ -42,12 +43,7 @@ export default function App() {
           <Typography variant="body1" color="text.secondary" mb={3}>
             Start a conversation to build your 30-day financial plan.
           </Typography>
-          <Button
-            variant="contained"
-            size="large"
-            onClick={handleStart}
-            disabled={loading}
-          >
+          <Button variant="contained" size="large" onClick={handleStart} disabled={loading}>
             {loading ? <CircularProgress size={24} color="inherit" /> : "Start conversation"}
           </Button>
         </Box>
@@ -60,6 +56,7 @@ export default function App() {
               <VoiceOrb />
               <CallControls onEnd={handleEnd} />
             </Stack>
+            <LiveCaption />
             <CardGrid />
           </Stack>
         </CallProvider>
