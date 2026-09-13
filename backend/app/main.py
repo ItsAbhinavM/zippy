@@ -15,6 +15,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+from app.config import settings
+print("CORS origins: ",settings.cors_origin_list)
+
 app.include_router(session_router)
 app.include_router(ws_router)
 

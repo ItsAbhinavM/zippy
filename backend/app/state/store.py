@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import Callable
+from pydantic import BaseModel
 from app.state.models import (
     FinancialState, IncomeItem, PaymentItem, ExpenseItem,
     Conflict, MissingField, Confidence,
@@ -12,6 +13,13 @@ CONFLICT_THRESHOLD = 0.10
 
 Listener = Callable[[dict], None]
 
+def _make_json_safe(value):
+    if isinstance(value,BaseModel):
+        return value.model_dump(mode="json")
+    if isinstance(value, list):
+        return [_make_json_safe(v) for v in value]
+    if isinstance(value, dict):
+        return {k: _make_json_safe(v) for k,v in value.items()}
 
 class StateStore:
     def __init__(self, session_id: str):
@@ -26,6 +34,7 @@ class StateStore:
         diff = compute_diff(old_state, self.state)
         if not diff:
             return
+        safe_diff = _make_json_safe(diff)
         for listener in self._listeners:
             listener(diff)
 
@@ -175,7 +184,7 @@ class StateStore:
         plan=compute_plan(self.state)
         self.plan=plan
         for listner in self._listeners:
-            listner({"plan":plan.model_dump()})
+            listner({"plan":plan.model_dump(mode="json")})
         return plan        
 
     @staticmethod

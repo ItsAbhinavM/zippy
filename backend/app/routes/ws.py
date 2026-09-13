@@ -17,7 +17,7 @@ async def state_socket(websocket: WebSocket, session_id: str):
 
     # send current full state on connect, so the frontend isn't blank
     # until the next mutation happens
-    await websocket.send_json({"type": "snapshot", "data": session.store.state.model_dump()})
+    await websocket.send_json({"type": "snapshot", "data": session.store.state.model_dump(mode="json")})
 
     def on_diff(diff: dict):
         import asyncio

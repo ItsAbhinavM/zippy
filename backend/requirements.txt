@@ -11,7 +11,6 @@ certifi==2026.7.22
 cffi==2.1.1
 click==8.5.0
 cloudpickle==3.1.2
-daily-python==0.32.0
 deepgram-sdk==7.8.1
 defusedxml==0.7.1
 distro==1.9.0
@@ -39,10 +38,11 @@ numba==0.67.0
 numpy==2.5.3
 onnxruntime==1.24.4
 packaging==26.3
-pillow==12.3.0
+pillow==11.3.0
 uvicorn[standard]
 google-genai
-pipecat-ai[daily,google,deepgram,cartesia,silero]
+livekit-api
+pipecat-ai[livekit,google,deepgram,cartesia,silero]
 propcache==0.5.2
 protobuf==6.33.6
 pycparser==3.0
@@ -64,5 +64,5 @@ typing_extensions==4.16.0
 uvicorn==0.52.4
 uvloop==0.22.1
 watchfiles==1.2.0
-websockets==17.1
+websockets==14.2
 yarl==1.24.5

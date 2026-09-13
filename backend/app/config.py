@@ -1,8 +1,9 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
-    daily_api_key: str
-    daily_domain: str
+    livekit_url: str          # e.g. "wss://your-project.livekit.cloud"
+    livekit_api_key: str
+    livekit_api_secret: str
 
     gemini_api_key: str
 
