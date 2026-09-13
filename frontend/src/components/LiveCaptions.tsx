@@ -15,32 +15,35 @@ export function LiveCaption() {
     return () => clearTimeout(timer);
   }, [transcript]);
 
-  if (!transcript) return null;
-
-  const isAssistant = transcript.role === "assistant";
-
   return (
-    <Box sx={{ display: "flex", justifyContent: "center", width: "100%" }}>
-      <Fade in={visible} timeout={{ enter: 200, exit: 500 }}>
-        <Paper
-          elevation={3}
-          sx={{
-            px: 2.5,
-            py: 1.25,
-            borderRadius: 999,
-            maxWidth: "90%",
-            bgcolor: isAssistant ? "primary.main" : "background.paper",
-            color: isAssistant ? "primary.contrastText" : "text.primary",
-            border: isAssistant ? "none" : "1px solid",
-            borderColor: "divider",
-          }}
-        >
-          <Typography variant="caption" sx={{ opacity: 0.75, display: "block", fontWeight: 600 }}>
-            {isAssistant ? "Zippy" : "You"}
-          </Typography>
-          <Typography variant="body2">{transcript.text}</Typography>
-        </Paper>
-      </Fade>
+    <Box sx={{ minHeight: 76, display: "flex", alignItems: "flex-start", justifyContent: "center", px: 2 }}>
+      {transcript && (
+        <Fade in={visible} timeout={{ enter: 200, exit: 450 }}>
+          <Paper
+            elevation={2}
+            sx={{
+              px: 2.25,
+              py: 1.5,
+              borderRadius: 3,          // rectangle with rounded corners, not a pill
+              maxWidth: 380,
+              width: "100%",
+              bgcolor: transcript.role === "assistant" ? "rgba(201,162,39,0.12)" : "background.paper",
+              border: "1px solid",
+              borderColor: transcript.role === "assistant" ? "rgba(201,162,39,0.35)" : "divider",
+            }}
+          >
+            <Typography
+              variant="caption"
+              sx={{ fontWeight: 700, color: transcript.role === "assistant" ? "primary.main" : "text.secondary" }}
+            >
+              {transcript.role === "assistant" ? "Zippy" : "You"}
+            </Typography>
+            <Typography variant="body2" sx={{ mt: 0.25, whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
+              {transcript.text}
+            </Typography>
+          </Paper>
+        </Fade>
+      )}
     </Box>
   );
 }

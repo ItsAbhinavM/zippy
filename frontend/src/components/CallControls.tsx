@@ -1,4 +1,4 @@
-import { Button, Stack, Chip } from "@mui/material";
+import { Button, Stack, Paper, Box, Typography, IconButton } from "@mui/material";
 import MicIcon from "@mui/icons-material/Mic";
 import MicOffIcon from "@mui/icons-material/MicOff";
 import CallEndIcon from "@mui/icons-material/CallEnd";
@@ -8,35 +8,52 @@ import { ConnectionState } from "livekit-client";
 export function CallControls({ onEnd }: { onEnd: () => void }) {
   const { localParticipant } = useLocalParticipant();
   const connectionState = useConnectionState();
-
+  const connected = connectionState === ConnectionState.Connected;
   const muted = !localParticipant?.isMicrophoneEnabled;
 
-  const toggleMute = () => {
-    localParticipant?.setMicrophoneEnabled(muted);
-  };
+  const toggleMute = () => localParticipant?.setMicrophoneEnabled(muted);
 
   return (
-    <Stack direction="row" spacing={2} alignItems="center">
-      <Chip
-        size="small"
-        label={connectionState === ConnectionState.Connected ? "Live" : "Connecting"}
-        color={connectionState === ConnectionState.Connected ? "success" : "default"}
+    <Paper
+      elevation={3}
+      sx={{
+        borderRadius: 999,
+        px: 1.5,
+        py: 1,
+        display: "flex",
+        alignItems: "center",
+        gap: 1.5,
+        width: "fit-content",
+        mx: "auto",
+      }}
+    >
+      <Box
+        sx={{
+          width: 8,
+          height: 8,
+          borderRadius: "50%",
+          bgcolor: connected ? "success.main" : "text.secondary",
+          ml: 0.5,
+        }}
       />
-      <Button
-        variant="outlined"
-        startIcon={muted ? <MicOffIcon /> : <MicIcon />}
-        onClick={toggleMute}
-      >
-        {muted ? "Unmute" : "Mute"}
-      </Button>
+      <Typography variant="caption" color="text.secondary" sx={{ mr: 0.5 }}>
+        {connected ? "Live" : "Connecting"}
+      </Typography>
+
+      <IconButton onClick={toggleMute} color={muted ? "warning" : "default"} size="small">
+        {muted ? <MicOffIcon fontSize="small" /> : <MicIcon fontSize="small" />}
+      </IconButton>
+
       <Button
         variant="contained"
         color="error"
+        size="small"
         startIcon={<CallEndIcon />}
         onClick={onEnd}
+        sx={{ px: 2 }}
       >
-        End conversation
+        End
       </Button>
-    </Stack>
+    </Paper>
   );
 }

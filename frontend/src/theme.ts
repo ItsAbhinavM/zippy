@@ -1,25 +1,45 @@
 import { createTheme } from "@mui/material/styles";
 
+// A private-bank-at-night palette: ink backgrounds, brass accent for
+// money, muted teal secondary. Deliberately not the default fintech
+// blue/green or the generic warm-cream/terracotta AI-page look.
 export const theme = createTheme({
   palette: {
-    mode: "light",
-    primary: { main: "#2E6F5E" },   // muted teal-green — calm, not alarming
-    secondary: { main: "#B5651D" }, // warm amber accent for warnings/conflicts
-    background: { default: "#F7F7F5" },
-    success: { main: "#2E7D32" },
-    warning: { main: "#ED6C02" },
-    error: { main: "#C62828" },
+    mode: "dark",
+    background: { default: "#11171B", paper: "#1B2328" },
+    primary: { main: "#C9A227", contrastText: "#181310" },
+    secondary: { main: "#3F7F74" },
+    success: { main: "#4C9A6A" },
+    warning: { main: "#D98E3E" },
+    error: { main: "#C1553D" },
+    text: { primary: "#F3EFE6", secondary: "#A9B0AE" },
+    divider: "rgba(243,239,230,0.08)",
   },
-  shape: { borderRadius: 12 },
+  shape: { borderRadius: 16 },
   typography: {
-    fontFamily: `"Roboto", "Helvetica", "Arial", sans-serif`,
-    h6: { fontWeight: 600 },
+    fontFamily: `"Manrope", "Helvetica", "Arial", sans-serif`,
+    h6: { fontWeight: 700 },
+    subtitle2: { fontWeight: 700 },
+    button: { fontWeight: 700, textTransform: "none" },
   },
   components: {
-    MuiCard: {
+    MuiPaper: {
       styleOverrides: {
-        root: { boxShadow: "0 1px 4px rgba(0,0,0,0.08)" },
+        root: {
+          backgroundImage: "none",
+          boxShadow: "0 2px 14px rgba(0,0,0,0.35)",
+        },
       },
+    },
+    MuiChip: {
+      styleOverrides: { root: { fontWeight: 700 } },
+    },
+    MuiButton: {
+      styleOverrides: { root: { borderRadius: 999 } },
     },
   },
 });
+
+// Used only for the "Zippy" wordmark — the one deliberately playful
+// element against an otherwise restrained UI.
+export const wordmarkFont = `"Baloo 2", "Manrope", sans-serif`;
