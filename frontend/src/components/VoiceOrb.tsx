@@ -1,24 +1,27 @@
 import { Box, Typography } from "@mui/material";
-import {
-  useParticipantIds,
-  useAudioLevelObserver,
-} from "@daily-co/daily-react";
-import { useState } from "react";
+import { useRemoteParticipants, useTracks, useTrackVolume, type TrackReference } from "@livekit/components-react";
+import { Track } from "livekit-client";
 
 export function VoiceOrb() {
-  const participantIds = useParticipantIds({ filter: "remote" });
-  const botId = participantIds[0];
+  const remoteParticipants = useRemoteParticipants();
+  const bot = remoteParticipants[0];
 
-  const [level, setLevel] = useState(0);
+  const audioTracks = useTracks([
+    {
+      source: Track.Source.Microphone,
+      withPlaceholder: false,
+    },
+  ]);
 
-  useAudioLevelObserver(
-    botId,
-    (audioLevel) => {
-      setLevel(audioLevel);
-    }
+  const botAudioTrack = audioTracks.find(
+    (track): track is TrackReference =>
+      track.participant.identity === bot?.identity &&
+      track.publication !== undefined
   );
 
-  const scale = 1 + Math.min(level, 1) * 0.4;
+  const level = useTrackVolume(botAudioTrack);
+
+  const scale = 1 + Math.min(level ?? 0, 1) * 0.4;
 
   return (
     <Box display="flex" flexDirection="column" alignItems="center" gap={1}>
@@ -30,12 +33,11 @@ export function VoiceOrb() {
           bgcolor: "primary.main",
           transform: `scale(${scale})`,
           transition: "transform 80ms ease-out",
-          opacity: botId ? 1 : 0.4,
+          opacity: bot ? 1 : 0.4,
         }}
       />
-
       <Typography variant="caption" color="text.secondary">
-        {botId ? "Assistant is on the call" : "Connecting…"}
+        {bot ? "Assistant is on the call" : "Connecting…"}
       </Typography>
     </Box>
   );

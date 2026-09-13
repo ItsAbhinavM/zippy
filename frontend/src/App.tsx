@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Container, Box, Typography, Button, Stack, CircularProgress } from "@mui/material";
 import { startSession, endSession,type StartSessionResponse } from "./api/session";
 import { useStateSocket } from "./hooks/useStaterSocket";
-import { CallProvider } from "./daily/callProvider";
+import { CallProvider } from "./livekit/callProvider";
 import { CallControls } from "./components/CallControls";
 import { VoiceOrb } from "./components/VoiceOrb";
 import { CardGrid } from "./components/cards/CardGrid";
@@ -54,7 +54,7 @@ export default function App() {
       )}
 
       {session && (
-        <CallProvider url={session.room_url} token={session.user_token}>
+        <CallProvider serverUrl={session.room_url} token={session.user_token}>
           <Stack spacing={3}>
             <Stack direction="row" justifyContent="space-between" alignItems="center">
               <VoiceOrb />

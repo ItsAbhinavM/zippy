@@ -6,12 +6,14 @@ from app.agent.pipeline import build_pipeline
 from app.state.store import StateStore
 
 logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO) 
 
 
-async def run_bot(room_url: str, token: str, store: StateStore) -> None:
-    pipeline, task = build_pipeline(room_url, token, store)
-    runner = WorkerRunner()
+async def run_bot(room_name: str, token: str, store: StateStore) -> None:
+    logger.info("run_bot starting for session %s (room=%s)", store.state.session_id, room_name)
     try:
+        pipeline, task = build_pipeline(room_name, token, store)
+        runner = WorkerRunner()
         await runner.run(task)
     except Exception:
         logger.exception("Bot pipeline crashed for session %s", store.state.session_id)
