@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { Box, Typography, Button, CircularProgress } from "@mui/material";
-import { startSession, endSession,type StartSessionResponse } from "./api/session";
+import {
+  startSession,
+  endSession,
+  type StartSessionResponse,
+} from "./api/session";
 import { useStateSocket } from "./hooks/useStaterSocket";
 import { CallProvider } from "./livekit/callProvider";
 import { AgentPanel } from "./components/AgentPanel";
@@ -32,9 +36,32 @@ export default function App() {
   };
 
   return (
-    <Box sx={{ minHeight: "100vh", bgcolor: "background.default" }}>
-      {/* Centered header — the one deliberately playful moment */}
-      <Box sx={{ textAlign: "center", pt: 6, pb: 4 }}>
+    <Box
+      sx={{
+        minHeight: "100vh",
+        bgcolor: "background.default",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
+      {/* Header */}
+      <Box
+        sx={{
+          textAlign: "center",
+          ...(session
+            ? {
+                pt: 3,
+                pb: 2,
+              }
+            : {
+                flex: 1,
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+              }),
+        }}
+      >
         <Typography
           sx={{
             fontFamily: wordmarkFont,
@@ -46,29 +73,52 @@ export default function App() {
         >
           Zippy
         </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+
+        <Typography
+          variant="body2"
+          color="text.secondary"
+          sx={{ mt: 0.5 }}
+        >
           Your 30-day financial plan, talked through out loud.
         </Typography>
+
+        {!session && (
+          <Box sx={{ mt: 4 }}>
+            <Button
+              variant="contained"
+              size="large"
+              onClick={handleStart}
+              disabled={loading}
+              sx={{ px: 4, py: 1.25 }}
+            >
+              {loading ? (
+                <CircularProgress size={22} color="inherit" />
+              ) : (
+                "Start conversation"
+              )}
+            </Button>
+          </Box>
+        )}
       </Box>
 
-      {!session && (
-        <Box sx={{ textAlign: "center", pb: 10 }}>
-          <Button variant="contained" size="large" onClick={handleStart} disabled={loading} sx={{ px: 4, py: 1.25 }}>
-            {loading ? <CircularProgress size={22} color="inherit" /> : "Start conversation"}
-          </Button>
-        </Box>
-      )}
-
+      {/* Conversation */}
       {session && (
-        <CallProvider serverUrl={session.room_url} token={session.user_token}>
+        <CallProvider
+          serverUrl={session.room_url}
+          token={session.user_token}
+        >
           <Box
             sx={{
               maxWidth: 1180,
+              width: "100%",
               mx: "auto",
               px: 3,
               pb: 6,
               display: "grid",
-              gridTemplateColumns: { xs: "1fr", md: "1fr 380px" },
+              gridTemplateColumns: {
+                xs: "1fr",
+                md: "1fr 380px",
+              },
               gap: 4,
               alignItems: "start",
             }}
