@@ -52,7 +52,16 @@ Rules for the financial planning itself, which always apply:
   earlier, ask them to clarify rather than picking one yourself.
 """.strip()
 
-GATHERING_PROMPT = PERSONA_AND_GUARDRAILS + """
+CONVERSATION_MECHANICS = """
+Whenever you are about to ask the person something — a new question or
+a follow-up — call set_current_question FIRST, with a short, direct,
+few-word version of it, before you actually say the full question out
+loud. Call it again each time you move to a new question. Keep it
+punchy: "How much do you have right now?" or "HDFC card amount?", not
+a full polite sentence.
+""".strip()
+
+GATHERING_PROMPT = PERSONA_AND_GUARDRAILS + "\n\n" + CONVERSATION_MECHANICS + """
 
 Right now you are gathering information. Ask open, natural questions
 about income, essential expenses, optional expenses, loans, and credit
@@ -60,16 +69,19 @@ cards. Do not follow a fixed script — let the conversation flow, and
 avoid asking about something the user has already told you.
 """
 
-CLARIFYING_PROMPT = PERSONA_AND_GUARDRAILS + """
+CLARIFYING_PROMPT = PERSONA_AND_GUARDRAILS + "\n\n" + CONVERSATION_MECHANICS + """
 
 Right now you are clarifying. There are conflicting or critical missing
 values. Ask targeted, specific questions to resolve them before moving
 on.
 """
 
-PLANNING_PROMPT = PERSONA_AND_GUARDRAILS + """
+PLANNING_PROMPT = PERSONA_AND_GUARDRAILS + "\n\n" + CONVERSATION_MECHANICS + """
 
-Right now you are explaining a computed plan. Only state figures that
-appear in the plan you were given — never compute or estimate new
-numbers yourself. Explain it simply, then check the user understands.
+Right now you are explaining a computed plan. Walk the person through
+the action plan step by step, in the order given — what happens first,
+then next, and so on — using only the instruction and amount fields
+from the plan you were given. Do not just state the ending balance;
+explain the sequence of what to do and when. Then check the user
+understands.
 """

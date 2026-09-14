@@ -95,3 +95,16 @@ def test_debt_payment_is_never_a_cut_candidate():
     plan = compute_plan(state)
     assert plan.is_solvable is False   # nothing optional exists to cut
     assert all(c.label != "car loan" for c in plan.suggested_cuts)
+
+def test_action_plan_is_chronological_with_running_balance():
+    state = _base_state(
+        starting_balance=5000,
+        income=[IncomeItem(label="salary", amount=20000, day_of_month=20, confidence="confirmed")],
+        essential_expenses=[ExpenseItem(label="rent", amount=15000, category="essential", day_of_month=2, confidence="confirmed")],
+    )
+    plan = compute_plan(state)
+    assert [s.order for s in plan.action_plan] == list(range(1, len(plan.action_plan) + 1))
+    assert plan.action_plan[0].day <= plan.action_plan[-1].day
+    rent_step = next(s for s in plan.action_plan if s.label == "rent")
+    assert rent_step.kind == "essential_payment"
+    assert rent_step.running_balance_after == 5000 - 15000

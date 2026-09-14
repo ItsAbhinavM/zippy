@@ -146,6 +146,11 @@ class StateStore:
         if not text:
             return
         self._emit({"type": "transcript", "data": {"role": role, "text": text}})
+        
+    def push_current_question(self, question: str) -> None:
+        if not question:
+            return
+        self._emit({"type": "question", "data": {"question": question}})
 
     # ---- internals ----
     def _apply_amount_update(self, item, amount, confidence, entity_type) -> None:

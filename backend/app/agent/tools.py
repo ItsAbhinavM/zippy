@@ -97,6 +97,20 @@ confirm_understood_schema = FunctionSchema(
     required=[],
 )
 
+set_current_question_schema = FunctionSchema(
+    name="set_current_question",
+    description=(
+        "Call this immediately, before you start speaking, whenever you are "
+        "about to ask the person something new. Give a short, direct, few-word "
+        "version of it — not the full sentence you'll say out loud. Call it "
+        "again each time you move to a new question."
+    ),
+    properties={
+        "question": {"type": "string", "description": "Short one-liner, e.g. 'How much do you have right now?'"},
+    },
+    required=["question"],
+)
+
 TOOLS_SCHEMA = ToolsSchema(standard_tools=[
     add_income_schema,
     add_payment_schema,
@@ -107,4 +121,5 @@ TOOLS_SCHEMA = ToolsSchema(standard_tools=[
     resolve_conflict_schema,
     mark_ready_for_planning_schema,
     confirm_understood_schema,
+    set_current_question_schema
 ])

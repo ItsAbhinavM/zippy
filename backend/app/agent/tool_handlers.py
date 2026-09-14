@@ -150,6 +150,13 @@ def register_all_tools(llm, store: StateStore) -> None:
     async def confirm_understood(params):
         store.set_phase("reviewing")
         await params.result_callback({"status": "confirmed"})
+    
+    async def set_current_question(params):
+        args = params.arguments
+        store.push_current_question(args["question"])
+        await params.result_callback({"status": "ok"})
+
+    llm.register_function("set_current_question", set_current_question)
 
     llm.register_function("add_income", add_income)
     llm.register_function("add_payment", add_payment)
