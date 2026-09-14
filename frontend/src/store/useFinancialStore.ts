@@ -16,9 +16,11 @@ interface FinancialStore {
   state: FinancialState | null;
   plan: Plan | null;
   connected: boolean;
+  currentQuestion: string|null;
   transcript: Transcript | null;
 
   applySnapshot: (state: FinancialState) => void;
+  applyQuestion: (questoin: string) => void;
   applyDiff: (diff: Partial<FinancialState> & { plan?: Plan }) => void;
   applyTranscript: (role: "user" | "assistant", text: string) => void;
   setConnected: (connected: boolean) => void;
@@ -29,9 +31,11 @@ export const useFinancialStore = create<FinancialStore>((set) => ({
   state: null,
   plan: null,
   connected: false,
+  currentQuestion: null,
   transcript: null,
 
   applySnapshot: (state) => set({ state, plan: null }),
+  applyQuestion: (question) => set({currentQuestion: question}),
 
   applyDiff: (diff) =>
     set((prev) => {

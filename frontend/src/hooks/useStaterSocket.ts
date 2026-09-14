@@ -7,6 +7,7 @@ export function useStateSocket(sessionId: string | null) {
   const applyDiff = useFinancialStore((s) => s.applyDiff);
   const applyTranscript = useFinancialStore((s) => s.applyTranscript);
   const setConnected = useFinancialStore((s) => s.setConnected);
+  const applyQuestion= useFinancialStore((s)=> s.applyQuestion);
 
   useEffect(() => {
     if (!sessionId) return;
@@ -21,6 +22,7 @@ export function useStateSocket(sessionId: string | null) {
       if (msg.type === "snapshot") applySnapshot(msg.data);
       else if (msg.type === "diff") applyDiff(msg.data);
       else if (msg.type === "transcript") applyTranscript(msg.data.role, msg.data.text);
+      else if (msg.type === "question") applyQuestion(msg.data.question);
     };
 
     const interval = setInterval(() => {

@@ -72,15 +72,28 @@ export interface DayBalance {
   events: string[];
 }
 
+export interface ActionStep {
+  day: string;
+  order: number;
+  kind: "income" | "essential_payment" | "debt_payment" | "optional_expense" | "optional_cut";
+  label: string;
+  amount: number;
+  original_amount: number | null;
+  running_balance_after: number;
+  instruction: string;
+}
+
 export interface Plan {
   total_income: number;
   total_essential: number;
   total_optional: number;
   net_position: number;
+  monthly_headroom: number;
   balance_curve: DayBalance[];
   shortfall_days: string[];
   is_solvable: boolean;
   suggested_cuts: SuggestedCut[];
   adjusted_balance_curve: DayBalance[] | null;
+  action_plan: ActionStep[];
   assumptions: Assumption[];
 }
