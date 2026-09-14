@@ -1,4 +1,4 @@
-import { Stack, Box } from "@mui/material";
+import { Box } from "@mui/material";
 import { VoiceOrb } from "./VoiceOrb";
 import { LiveCaption } from "./LiveCaptions";
 import { CallControls } from "./CallControls";

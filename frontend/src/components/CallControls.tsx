@@ -1,4 +1,4 @@
-import { Button, Stack, Paper, Box, Typography, IconButton } from "@mui/material";
+import { Button, Paper, Box, Typography, IconButton } from "@mui/material";
 import MicIcon from "@mui/icons-material/Mic";
 import MicOffIcon from "@mui/icons-material/MicOff";
 import CallEndIcon from "@mui/icons-material/CallEnd";
